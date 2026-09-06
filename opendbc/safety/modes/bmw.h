@@ -156,7 +156,9 @@ static bool bmw_tx_hook(const CANPacket_t *msg) {
     const int steer_req = (steer_mode == BMW_STEER_MODE_TORQUE) ? 1 : 0;
 
     if ((steer_req != 0) || (desired_torque != 0)) {
-      if (bmw_seen_22f) {
+      if (!bmw_seen_22f) {
+        violation = true;
+      } else {
         const uint32_t elapsed = safety_get_ts_elapsed(microsecond_timer_get(), bmw_ts_22f);
         if (elapsed > BMW_STEER_STATUS_TIMEOUT_US) {
           violation = true;
@@ -181,7 +183,9 @@ static bool bmw_tx_hook(const CANPacket_t *msg) {
       violation = true;
     }
 
-    if (bmw_seen_199) {
+    if (!bmw_seen_199) {
+      violation = true;
+    } else {
       const uint32_t elapsed = safety_get_ts_elapsed(microsecond_timer_get(), bmw_ts_199);
       if (elapsed > BMW_PEDAL_RX_TIMEOUT_US) {
         violation = true;

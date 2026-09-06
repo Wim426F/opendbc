@@ -69,6 +69,10 @@ class TestBmwSafety(common.CarSafetyTest, common.MotorTorqueSteeringSafetyTest):
     self.cnt_22f = 0
     self.cnt_200 = 0
     super().setUp()
+    # 0x200 is rejected until 0x199 has been seen (interceptor heartbeat).
+    self._rx(self._user_gas_msg(0))
+    # Non-zero / TorqueControl 0x22E is rejected until 0x22F has been seen.
+    self._rx(self._torque_meas_msg(0))
 
   def _pack_steer_cmd(self, torque: int, mode: int, counter: int, checksum: int | None = None):
     dat = bytearray(5)
@@ -196,6 +200,38 @@ class TestBmwSafety(common.CarSafetyTest, common.MotorTorqueSteeringSafetyTest):
     self.cnt_22e = (self.cnt_22e + 1) & 0xF
     self.assertFalse(self._tx(msg))
 
+  def test_realtime_limit_up(self):
+    # common.py calls init_tests() inside the loop, which clears bmw_seen_22f.
+    self.safety.set_controls_allowed(True)
+
+    for sign in [-1, 1]:
+      self.safety.set_safety_hooks(CarParams.SafetyModel.bmw, 0)
+      self.safety.init_tests()
+      self.cnt_22e = 0
+      self.cnt_22f = 0
+      self.cnt_200 = 0
+      self._rx(self._user_gas_msg(0))
+      self._rx(self._torque_meas_msg(0))
+      self._set_prev_torque(0)
+      self.safety.set_controls_allowed(True)
+      for t in np.arange(0, self.MAX_RT_DELTA + 1, 1):
+        t *= sign
+        self.safety.set_torque_meas(t, t)
+        self.assertTrue(self._tx(self._torque_cmd_msg(t)))
+      self.assertFalse(self._tx(self._torque_cmd_msg(sign * (self.MAX_RT_DELTA + 1))))
+
+      self._set_prev_torque(0)
+      for t in np.arange(0, self.MAX_RT_DELTA + 1, 1):
+        t *= sign
+        self.safety.set_torque_meas(t, t)
+        self.assertTrue(self._tx(self._torque_cmd_msg(t)))
+
+      self.safety.set_timer(common.RT_INTERVAL + 1)
+      # Keep 0x22F heartbeat current; 50 ms lag is a real lat reject.
+      self._rx(self._torque_meas_msg(sign * self.MAX_RT_DELTA))
+      self.assertTrue(self._tx(self._torque_cmd_msg(sign * self.MAX_RT_DELTA)))
+      self.assertTrue(self._tx(self._torque_cmd_msg(sign * (self.MAX_RT_DELTA + 1))))
+
   def test_spam_torque_beyond_max(self):
     self.safety.set_controls_allowed(True)
     self._set_prev_torque(self.MAX_TORQUE)
@@ -282,6 +318,15 @@ class TestBmwSafety(common.CarSafetyTest, common.MotorTorqueSteeringSafetyTest):
     self._set_prev_torque(0)
     self.assertTrue(self._tx(self._torque_cmd_msg(self.MAX_RATE_UP)))
     self.assertFalse(self._tx(self._gas_cmd(20)))
+
+  def test_gas_requires_pedal_status_rx(self):
+    self.safety.set_safety_hooks(CarParams.SafetyModel.bmw, 0)
+    self.safety.init_tests()
+    self.cnt_200 = 0
+    self.safety.set_controls_allowed(True)
+    self.assertFalse(self._tx(self._gas_cmd(10)))
+    self._rx(self._user_gas_msg(0))
+    self.assertTrue(self._tx(self._gas_cmd(10)))
 
   def test_pedal_status_timeout_blocks_gas(self):
     self.safety.set_controls_allowed(True)

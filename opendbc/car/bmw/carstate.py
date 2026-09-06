@@ -104,11 +104,9 @@ class CarState(CarStateBase):
       ret.steeringAngleDeg = cp.vl["SteeringWheelAngle"]["SteeringPosition"]
       ret.steeringRateDeg = cp.vl["SteeringWheelAngle"]["SteeringSpeed"]
 
-    # 0x22F motor torque is actuator, not a torsion bar. Do not treat as driver override.
+    # 0x22F motor torque is actuator, not a torsion bar. Bit2 is our own SoftOff, not a fault.
     if _has_msg(cp_body, "STEERING_STATUS"):
       ret.steeringTorqueEps = cp_body.vl["STEERING_STATUS"]["STEERING_TORQUE"]
-      status = int(cp_body.vl["STEERING_STATUS"]["CONTROL_STATUS"])
-      ret.steerFaultTemporary = (status & 0x4) != 0
 
     if _has_msg(cp, "TurnSignals"):
       blinker_on = cp.vl["TurnSignals"]["TurnSignalActive"] != 0 and cp.vl["TurnSignals"]["TurnSignalIdle"] == 0
