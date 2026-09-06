@@ -14,8 +14,10 @@ def test_accel_to_gas_monotonic_full_authority():
   # Weak FF only: 0 m/s² → coast guess 10 %; I-term trims in LongControl.
   assert CarControllerParams.accel_to_gas_raw(0.0) == 26  # 10% * 255
   assert CarControllerParams.accel_to_gas_raw(-1.5) == 0   # max regen request
-  assert CarControllerParams.accel_to_gas_raw(1.5) == 255  # full pedal
-  assert CarControllerParams.accel_to_gas_raw(3.0) == 255
+  assert CarControllerParams.accel_to_gas_raw(1.5) == CarControllerParams.PEDAL_MAX_RAW
+  assert CarControllerParams.accel_to_gas_raw(3.0) == CarControllerParams.PEDAL_MAX_RAW
+  assert CarControllerParams.PEDAL_MAX_RAW == 102  # 40 %
+  assert CarControllerParams.accel_to_pedal_pct(1.5) == CarControllerParams.PEDAL_MAX_PCT
   # Strictly increasing through the clip range
   prev = -1
   for a in (-1.5, -0.75, 0.0, 0.75, 1.5):

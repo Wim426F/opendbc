@@ -239,6 +239,12 @@ class TestBmwSafety(common.CarSafetyTest, common.MotorTorqueSteeringSafetyTest):
     self.assertFalse(self._tx(self._torque_cmd_msg(self.MAX_TORQUE + 1)))
     self.assertFalse(self._tx(self._torque_cmd_msg(-(self.MAX_TORQUE + 1))))
 
+  def test_gas_over_pedal_cap_rejected(self):
+    self.safety.set_controls_allowed(True)
+    self.assertTrue(self._tx(self._gas_cmd(102)))
+    self.assertFalse(self._tx(self._gas_cmd(103)))
+    self.assertFalse(self._tx(self._gas_cmd(255)))
+
   def test_gas_without_enable_rejected(self):
     self.safety.set_controls_allowed(True)
     self.assertFalse(self._tx(self._gas_cmd(50, enable=0x00)))

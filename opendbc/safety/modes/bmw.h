@@ -20,6 +20,7 @@
 #define BMW_STEER_MODE_SOFTOFF   3U
 
 #define BMW_GAS_ENABLE_MAGIC     0xA5U
+#define BMW_GAS_MAX_RAW          102U   /* 40 % of 255; keep in sync with PEDAL_MAX_RAW */
 #define BMW_BRAKE_PRESSED        0x64U
 
 #define BMW_PEDAL_RX_TIMEOUT_US      200000U
@@ -193,6 +194,10 @@ static bool bmw_tx_hook(const CANPacket_t *msg) {
     }
 
     if (msg->data[1] != BMW_GAS_ENABLE_MAGIC) {
+      violation = true;
+    }
+
+    if (msg->data[0] > BMW_GAS_MAX_RAW) {
       violation = true;
     }
 

@@ -63,13 +63,15 @@ class CarControllerParams:
   ACCEL_MAX = 1.5
   ACCEL_MIN = -1.5
 
-  # Monotonic actuator scale only. Do NOT invert a measured pedal→accel curve:
-  # gain changes with v, pack limits, SOC. LongControl I-term (aTarget - aEgo)
-  # finds the pedal that matches; this map only has to be monotonic 0–100 %.
-  # 0 % at ACCEL_MIN = "request max regen available". 100 % at ACCEL_MAX.
-  # GAS_COAST_PCT is a weak feedforward guess for a=0 (I-term trims it).
+  # Hard ceiling on interceptor command. I-term must not wind to 100 % because
+  # AccY has not reached aTarget (power/SOC/speed). Neighborhood log: ~30 % ≈
+  # +1.5 m/s². Panda must use the same raw cap (PEDAL_MAX_RAW).
+  PEDAL_MAX_PCT = 40.0
+  PEDAL_MAX_RAW = int(round(40.0 * 255.0 / 100.0))  # 102; keep in sync with bmw.h
+
+  # Monotonic FF only. +ACCEL_MAX maps to PEDAL_MAX_PCT, not 100 %.
   ACCEL_TO_PEDAL_BP = [-1.50, 0.00, 1.50]
-  PEDAL_PCT_V =       [  0.0, 10.0, 100.0]
+  PEDAL_PCT_V =       [  0.0, 10.0, PEDAL_MAX_PCT]
   GAS_COAST_PCT = 10.0
   LONG_TX_STEP = 2  # 50 Hz from 100 Hz loop (DT_CTRL = 10 ms)
 
@@ -86,7 +88,7 @@ class CarControllerParams:
   def accel_to_pedal_pct(cls, accel: float) -> float:
     a = float(np.clip(accel, cls.ACCEL_MIN, cls.ACCEL_MAX))
     pct = float(np.interp(a, cls.ACCEL_TO_PEDAL_BP, cls.PEDAL_PCT_V))
-    return float(np.clip(pct, 0.0, 100.0))
+    return float(np.clip(pct, 0.0, cls.PEDAL_MAX_PCT))
 
   @classmethod
   def accel_to_gas_raw(cls, accel: float) -> int:

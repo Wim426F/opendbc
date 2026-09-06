@@ -64,6 +64,7 @@ class CarController(CarControllerBase):
       apply_accel = float(np.clip(actuators.accel, CarControllerParams.ACCEL_MIN, CarControllerParams.ACCEL_MAX))
       target_pct = CarControllerParams.accel_to_pedal_pct(apply_accel)
       self.gas_pct = CarControllerParams.slew_pedal_pct(target_pct, self.gas_pct)
+      self.gas_pct = float(np.clip(self.gas_pct, 0.0, CarControllerParams.PEDAL_MAX_PCT))
       if self.frame % CarControllerParams.LONG_TX_STEP == 0:
         gas_raw = int(round(self.gas_pct * 255.0 / 100.0))
         can_sends.append(bmwcan.create_pedal_command(gas_raw, self.gas_counter))
