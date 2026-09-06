@@ -22,3 +22,11 @@ def test_accel_to_gas_monotonic_full_authority():
     raw = CarControllerParams.accel_to_gas_raw(a)
     assert raw >= prev
     prev = raw
+
+
+def test_slew_pedal_does_not_step_to_home():
+  # 25 %/s down, DT_CTRL=0.01 s → 0.25 % per control step
+  nxt = CarControllerParams.slew_pedal_pct(0.0, 40.0)
+  assert nxt == 39.75
+  nxt = CarControllerParams.slew_pedal_pct(100.0, 40.0)
+  assert nxt == 40.5

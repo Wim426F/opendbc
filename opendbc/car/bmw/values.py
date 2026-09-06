@@ -3,7 +3,7 @@ from enum import IntEnum, IntFlag
 
 import numpy as np
 
-from opendbc.car import Bus, CarSpecs, DbcDict, PlatformConfig, Platforms
+from opendbc.car import Bus, CarSpecs, DbcDict, PlatformConfig, Platforms, DT_CTRL, rate_limit
 from opendbc.car.common.conversions import Conversions as CV
 from opendbc.car.docs_definitions import CarDocs, CarHarness, CarParts, SupportType
 from opendbc.car.structs import CarState
@@ -71,17 +71,32 @@ class CarControllerParams:
   ACCEL_TO_PEDAL_BP = [-1.50, 0.00, 1.50]
   PEDAL_PCT_V =       [  0.0, 10.0, 100.0]
   GAS_COAST_PCT = 10.0
-  LONG_TX_STEP = 2  # 50 Hz from 100 Hz loop
+  LONG_TX_STEP = 2  # 50 Hz from 100 Hz loop (DT_CTRL = 10 ms)
+
+  # Actuator rate limits (% Tesla pedal / s). Single limiter; not a jerk model.
+  # Down = toward home = more regen. 25 %/s => 100 %→0 % in 4 s while tracking.
+  # Disable does not use these: 0x200 stops immediately.
+  PEDAL_MAX_DOWN_PCT_S = 25.0
+  PEDAL_MAX_UP_PCT_S = 50.0
 
   def __init__(self, CP):
     pass
 
   @classmethod
-  def accel_to_gas_raw(cls, accel: float) -> int:
-    """Clip accel and map to interceptor byte0 (0–255)."""
+  def accel_to_pedal_pct(cls, accel: float) -> float:
     a = float(np.clip(accel, cls.ACCEL_MIN, cls.ACCEL_MAX))
     pct = float(np.interp(a, cls.ACCEL_TO_PEDAL_BP, cls.PEDAL_PCT_V))
-    return int(round(max(0.0, min(100.0, pct)) * 255.0 / 100.0))
+    return float(np.clip(pct, 0.0, 100.0))
+
+  @classmethod
+  def accel_to_gas_raw(cls, accel: float) -> int:
+    return int(round(cls.accel_to_pedal_pct(accel) * 255.0 / 100.0))
+
+  @classmethod
+  def slew_pedal_pct(cls, target: float, last: float) -> float:
+    down = -cls.PEDAL_MAX_DOWN_PCT_S * DT_CTRL
+    up = cls.PEDAL_MAX_UP_PCT_S * DT_CTRL
+    return rate_limit(target, last, down, up)
 
 
 @dataclass

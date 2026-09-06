@@ -70,6 +70,7 @@ class CarState(CarStateBase):
     self.resume = 0
     self.cancel = 0
     self.cancel_lever_up = 0
+    self.pedal_out_pct = 0.0
 
   def _brake_pressed(self, can_parsers) -> bool:
     cp_alt = can_parsers.get(Bus.alt)
@@ -87,7 +88,7 @@ class CarState(CarStateBase):
     ret = structs.CarState()
     ret_sp = structs.CarStateSP()
 
-    # --- speed: driven axle RL/RR. Never 0x1A0 (gateway clamps ≥ 10 km/h). ---
+    # vEgo: mean of four 0xCE wheels (kph in DBC). Not 0x1A0 VehicleSpeed.
     if _has_msg(cp, "WheelSpeeds"):
       fl = cp.vl["WheelSpeeds"]["Wheel_FL"]
       fr = cp.vl["WheelSpeeds"]["Wheel_FR"]
@@ -97,8 +98,14 @@ class CarState(CarStateBase):
       ret.wheelSpeeds.fr = fr * CV.KPH_TO_MS
       ret.wheelSpeeds.rl = rl * CV.KPH_TO_MS
       ret.wheelSpeeds.rr = rr * CV.KPH_TO_MS
-      self.parse_wheel_speeds(ret, rl, rr, rl, rr)
+      self.parse_wheel_speeds(ret, fl, fr, rl, rr)
     ret.standstill = ret.vEgoRaw < STANDSTILL_THRESHOLD
+
+    # aEgo: 0x1A0 AccY only (0.025 m/s²). Do not use wheel-speed derivative.
+    if _has_msg(cp, "Speed"):
+      ret.aEgo = float(cp.vl["Speed"]["AccY"])
+    else:
+      ret.aEgo = 0.0
 
     if _has_msg(cp, "SteeringWheelAngle"):
       ret.steeringAngleDeg = cp.vl["SteeringWheelAngle"]["SteeringPosition"]
@@ -126,6 +133,7 @@ class CarState(CarStateBase):
     if _has_msg(cp_alt, "PEDAL_Status"):
       pedal_in = float(cp_alt.vl["PEDAL_Status"]["PedalInPct"])
       pedal_out = float(cp_alt.vl["PEDAL_Status"]["PedalOutPct"])
+    self.pedal_out_pct = pedal_out
     ret.deprecated.gas = pedal_in / 100.0
     ret.gasPressed = (pedal_in > CarControllerParams.GAS_PRESSED_THRESHOLD and
                       pedal_in > pedal_out + CarControllerParams.GAS_OVERRIDE_MARGIN)
@@ -182,9 +190,10 @@ class CarState(CarStateBase):
 
     pt = _try_can_parser(dbc.get(Bus.pt), [
       ("WheelSpeeds", 50),
+      ("Speed", 200),  # AccY; ignore VehicleSpeed (gateway ≥ 10 km/h)
       ("SteeringWheelAngle", 100),
       ("CruiseControl", 5),
-      ("TerminalStatus", math.nan),  # CAS 0x130 may be missing on can2
+      ("TerminalStatus", math.nan),
       ("TurnSignals", math.nan),
       ("SteeringButtons", math.nan),
     ], CanBus.pt)
@@ -196,7 +205,6 @@ class CarState(CarStateBase):
       ("LeverCommand_From_VCU", 10),
       ("EPB_Status", 10),
       ("SendAbsDscMessages", 100),
-      ("ID108DIR_torque_From_Motor", math.nan),
     ], CanBus.pt)
     if alt is not None:
       parsers[Bus.alt] = alt

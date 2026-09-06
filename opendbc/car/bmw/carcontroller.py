@@ -13,6 +13,8 @@ class CarController(CarControllerBase):
     self.apply_steer_last = 0.0
     self.soft_off_counter = CarControllerParams.SOFT_OFF_FRAMES
     self.long_speed_ok = False
+    self.long_active_prev = False
+    self.gas_pct = 0.0
     self.gas_counter = 0
     self.packer = CANPacker(dbc_names[Bus.body]) if Bus.body in dbc_names else None
 
@@ -55,12 +57,18 @@ class CarController(CarControllerBase):
       self.long_speed_ok = False
 
     apply_accel = 0.0
-    if self.CP.openpilotLongitudinalControl and CC.longActive and self.long_speed_ok:
+    long_on = bool(self.CP.openpilotLongitudinalControl and CC.longActive and self.long_speed_ok)
+    if long_on:
+      if not self.long_active_prev:
+        self.gas_pct = float(np.clip(CS.pedal_out_pct, 0.0, 100.0))
       apply_accel = float(np.clip(actuators.accel, CarControllerParams.ACCEL_MIN, CarControllerParams.ACCEL_MAX))
+      target_pct = CarControllerParams.accel_to_pedal_pct(apply_accel)
+      self.gas_pct = CarControllerParams.slew_pedal_pct(target_pct, self.gas_pct)
       if self.frame % CarControllerParams.LONG_TX_STEP == 0:
-        gas_raw = CarControllerParams.accel_to_gas_raw(apply_accel)
+        gas_raw = int(round(self.gas_pct * 255.0 / 100.0))
         can_sends.append(bmwcan.create_pedal_command(gas_raw, self.gas_counter))
         self.gas_counter = (self.gas_counter + 1) & 0xF
+    self.long_active_prev = long_on
 
     new_actuators = actuators.as_builder()
     new_actuators.torque = self.apply_steer_last / CarControllerParams.STEER_MAX
