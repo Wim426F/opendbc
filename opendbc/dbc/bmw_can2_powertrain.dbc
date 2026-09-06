@@ -1,0 +1,529 @@
+VERSION ""
+
+
+NS_ :
+    NS_DESC_
+    CM_
+    BA_DEF_
+    BA_
+    VAL_
+    CAT_DEF_
+    CAT_
+    FILTER
+    BA_DEF_DEF_
+    EV_DATA_
+    ENVVAR_DATA_
+    SGTYPE_
+    SGTYPE_VAL_
+    BA_DEF_SGTYPE_
+    BA_SGTYPE_
+    SIG_TYPE_REF_
+    VAL_TABLE_
+    SIG_GROUP_
+    SIG_VALTYPE_
+    SIGTYPE_VALTYPE_
+    BO_TX_BU_
+    BA_DEF_REL_
+    BA_REL_
+    BA_DEF_DEF_REL_
+    BU_SG_REL_
+    BU_EV_REL_
+    BU_BO_REL_
+    SG_MUL_VAL_
+
+BS_:
+
+BU_: PCS PCS_Controller VCU HVCU MCU i3LIM GearLever T2C GFM Drive_Unit Superman PEDAL CRUISE EPB VEHICLE XXX
+
+
+CM_ "BMW E90 EV can2_powertrain. Cleaned from BMW_can2_powertrain.dbc. Pedal firmware (pedal_arduino.ino) is law for 0x199/0x200/0x201. Live brake is VCU SendAbsDscMessages 0x0A8 (BO_ 168); e9x EngineAndBrake 0x168 is ICE DME and must not be used for OP brake.";
+
+BO_ 409 PEDAL_Status: 3 PEDAL
+ SG_ PedalInPct : 0|8@1+ (1,0) [0|100] "%" VEHICLE
+ SG_ PedalOutPct : 8|8@1+ (1,0) [0|100] "%" VEHICLE
+ SG_ PedalState : 16|8@1+ (1,0) [0|2] "" VEHICLE
+
+BO_ 512 CRUISE_Gas: 4 CRUISE
+ SG_ GasReq : 0|8@1+ (0.39215686,0) [0|100] "%" PEDAL
+ SG_ GasEnable : 8|8@1+ (1,0) [0|255] "" PEDAL
+ SG_ GasCounter : 16|4@1+ (1,0) [0|15] "" PEDAL
+ SG_ GasChecksum : 24|8@1+ (1,0) [0|255] "" PEDAL
+
+BO_ 513 VEHICLE_TorqueCut: 3 VCU
+ SG_ REGEN_CUT : 0|1@1+ (1,0) [0|1] "" PEDAL
+ SG_ ALL_TORQUE_CUT : 1|1@1+ (1,0) [0|1] "" PEDAL
+ SG_ CutFlagsReserved : 2|6@1+ (1,0) [0|63] "" PEDAL
+ SG_ CutCounter : 8|4@1+ (1,0) [0|15] "" PEDAL
+ SG_ CutChecksum : 16|8@1+ (1,0) [0|255] "" PEDAL
+
+BO_ 168 SendAbsDscMessages: 8 VCU
+ SG_ Checksum_A8 : 0|8@1+ (1,0) [0|255] "" XXX
+ SG_ Counter_A8 : 8|8@1+ (1,0) [0|255] "" XXX
+ SG_ A8_Byte2 : 16|8@1+ (1,0) [0|255] "" XXX
+ SG_ A8_Byte3 : 24|8@1+ (1,0) [0|255] "" XXX
+ SG_ A8_Byte4 : 32|8@1+ (1,0) [0|255] "" XXX
+ SG_ A8_Byte5 : 40|8@1+ (1,0) [0|255] "" XXX
+ SG_ A8_Byte6 : 48|8@1+ (1,0) [0|255] "" XXX
+ SG_ BrakeMagic : 56|8@1+ (1,0) [0|255] "" XXX
+
+BO_ 524 PCS_ChgStatus_From_PCS: 8 PCS
+ SG_ PCS_CHG_STAT : 0|4@1+ (1,0) [0|15] "" PCS_Controller
+ SG_ PCSGrid : 6|2@1+ (1,0) [0|3] "" PCS_Controller
+ SG_ PCS_HW : 59|2@1+ (1,0) [0|3] "" PCS_Controller
+ SG_ ChgPavail : 24|8@1+ (0.1,0) [0|25.5] "kW" PCS_Controller
+
+BO_ 612 PCS_LineStatus_From_PCS: 8 PCS
+ SG_ ACVolts : 0|14@1+ (0.033,0) [0|541.2] "V" PCS_Controller
+ SG_ ACAmps : 8|9@1+ (0.1,0) [0|51.1] "A" PCS_Controller
+ SG_ ACPwr : 24|8@1+ (0.1,0) [0|25.5] "kW" PCS_Controller
+ SG_ ACLim : 32|10@1+ (0.1,0) [0|102.3] "A" PCS_Controller
+
+BO_ 676 PCS_Temps_From_PCS: 8 PCS
+ SG_ ATemp : 0|16@1+ (1,0) [0|65535] "" PCS_Controller
+ SG_ BTemp : 8|13@1+ (1,0) [0|8191] "" PCS_Controller
+ SG_ CTemp : 16|13@1+ (1,0) [0|8191] "" PCS_Controller
+ SG_ DCDCTemp : 32|11@1+ (1,0) [0|2047] "" PCS_Controller
+ SG_ DCDCBTemp : 48|9@1+ (0.293542,0) [0|150] "C" PCS_Controller
+ SG_ AmbTemp : 40|11@1+ (1,0) [0|2047] "" PCS_Controller
+
+BO_ 708 PCS_Logging_From_PCS: 8 PCS
+ SG_ mux2C4 : 0|8@1+ (1,0) [0|255] "" PCS_Controller
+ SG_ HVVolts : 16|12@1+ (0.146484,0) [0|600] "V" PCS_Controller
+ SG_ LVVolts : 0|10@1+ (0.0390625,0) [0|40] "V" PCS_Controller
+ SG_ IOut_PhA : 32|8@1+ (0.1,0) [0|25.5] "A" PCS_Controller
+
+BO_ 932 PCS_AlertMatrix_From_PCS: 8 PCS
+ SG_ PCSAlertPage : 0|4@1+ (1,0) [0|15] "" PCS_Controller
+ SG_ PCSAlertBits : 4|60@1+ (1,0) [0|0] "" PCS_Controller
+
+BO_ 1060 PCS_AlertLog_From_PCS: 8 PCS
+ SG_ PCSAlertId : 0|8@1+ (1,0) [0|255] "" PCS_Controller
+ SG_ AlertRxError : 16|3@1+ (1,0) [0|7] "" PCS_Controller
+ SG_ AlertCANId : 24|16@1+ (1,0) [0|65535] "" PCS_Controller
+
+BO_ 1188 PCS_BootID_From_PCS: 8 PCS
+ SG_ PCSBootId : 56|8@1+ (1,0) [0|255] "" PCS_Controller
+
+BO_ 1644 PCS_Debug_From_PCS: 8 PCS
+ SG_ mux76C : 0|8@1+ (1,0) [0|255] "" PCS_Controller
+ SG_ IOut_PhA_ : 8|14@1+ (0.0025,0) [0|40] "A" PCS_Controller
+
+BO_ 317 ACChargeLimitControl_From_PCS_Controller: 6 PCS
+ SG_ ChargerEnable : 0|8@1+ (1,0) [0|255] "" PCS
+ SG_ ACILim : 8|8@1+ (0.5,0) [0|127.5] "A" PCS
+
+BO_ 522 HVPContactorState_From_PCS_Controller: 6 PCS
+
+BO_ 530 BMSStatus_From_PCS_Controller: 8 PCS
+
+BO_ 541 EVSEStatus_From_PCS_Controller: 8 PCS_Controller
+ SG_ EVSEType : 0|8@1+ (1,0) [0|255] "" PCS
+ SG_ PilotLim : 8|8@1+ (0.5,0) [0|127.5] "A" PCS
+ SG_ CableLim : 24|8@1+ (1,0) [0|255] "A" PCS
+
+BO_ 554 PCSControlCommand_From_PCS_Controller: 4 PCS_Controller
+ SG_ PrechargeVoltage : 0|16@1+ (0.1,0) [0|6553.5] "V" PCS
+ SG_ ControlByte : 16|8@1+ (1,0) [0|255] "" PCS
+ SG_ HVMeas : 24|8@1+ (1,0) [0|255] "V" PCS
+
+BO_ 562 BMSContactorRequest_From_PCS_Controller: 8 PCS_Controller
+
+BO_ 573 ChargePilotStatus_From_PCS_Controller: 4 PCS_Controller
+
+BO_ 605 ChargePilotPlugStatus_From_PCS_Controller: 8 PCS_Controller
+
+BO_ 801 VCFrontSensorStatus_From_PCS_Controller: 8 PCS_Controller
+
+BO_ 819 UIChargeLimit_From_PCS_Controller: 4 PCS_Controller
+
+BO_ 929 DCDCVoltageSetpoint_From_PCS_Controller: 8 PCS_Controller
+ SG_ DCDCSpnt : 16|11@1+ (0.01,0) [0|20.47] "V" PCS
+
+BO_ 946 BMSLoggingMux_From_PCS_Controller: 8 PCS_Controller
+ SG_ mux3b2 : 0|8@1+ (1,0) [0|255] "" PCS
+
+BO_ 1349 VCFrontMuxData_From_PCS_Controller: 8 PCS_Controller
+ SG_ Count545 : 48|4@1+ (1,0) [0|15] "" PCS
+
+BO_ 265 ChargerControl_From_VCU: 8 VCU
+ SG_ OperationMode : 0|8@1+ (1,0) [0|255] "" PCS_Controller
+ SG_ HVVoltage : 8|16@1+ (1,0) [0|65535] "V" PCS_Controller
+ SG_ HVVoltageSetpoint : 24|16@1+ (1,0) [0|65535] "V" PCS_Controller
+ SG_ HVPowerSetpoint : 40|16@1+ (1,0) [0|65535] "W" PCS_Controller
+ SG_ CurrentLimit : 56|4@1+ (1,0) [1|16] "A" PCS_Controller
+ SG_ EnableControl : 60|4@1+ (1,0) [0|15] "" PCS_Controller
+
+BO_ 920 ContactorsState_From_HVCU: 7 HVCU
+ SG_ MainContactorPosState : 0|8@1+ (1,0) [0|2] "" VCU
+ SG_ MainContactorNegState : 8|8@1+ (1,0) [0|2] "" VCU
+ SG_ CCScontactorPosState : 16|8@1+ (1,0) [0|2] "" VCU
+ SG_ CCScontactorNegState : 24|8@1+ (1,0) [0|2] "" VCU
+ SG_ RegenIn : 32|8@1+ (1,0) [0|1] "" VCU
+
+BO_ 919 ContactorControl_From_VCU: 4 VCU
+ SG_ PrechargeRelay : 8|8@1+ (1,0) [0|1] "" HVCU
+ SG_ NegativeRelay : 16|8@1+ (1,0) [0|1] "" HVCU
+ SG_ PositiveRelay : 24|8@1+ (1,0) [0|1] "" HVCU
+
+BO_ 787 BMS_PDO2_Request_From_VCU: 8 VCU
+ SG_ Reserved1 : 0|8@1+ (1,0) [0|255] "" MCU
+ SG_ MCUSummary : 8|8@1+ (1,0) [0|255] "" MCU
+ SG_ PackSummary : 16|8@1+ (1,0) [0|255] "" MCU
+ SG_ CellVoltages : 24|8@1+ (1,0) [0|255] "" MCU
+ SG_ Thresholds : 32|8@1+ (1,0) [0|255] "" MCU
+ SG_ SOC : 40|8@1+ (1,0) [0|255] "" MCU
+ SG_ CellMap : 48|8@1+ (1,0) [0|255] "" MCU
+ SG_ Reserved2 : 56|8@1+ (1,0) [0|255] "" MCU
+
+BO_ 659 MCU_PDO_from_MCU: 8 MCU
+ SG_ mux293 M : 0|8@1+ (1,0) [0|255] "" VCU
+ SG_ ChargeKw m1 : 16|16@1+ (1,0) [0|65535] "kW" VCU
+ SG_ ChargeState m1 : 32|8@1+ (1,0) [0|255] "" VCU
+ SG_ PlugState m1 : 40|8@1+ (1,0) [0|255] "" VCU
+ SG_ Alerts m1 : 48|16@1+ (1,0) [0|65535] "" VCU
+ SG_ PackVoltage m2 : 16|16@1+ (0.1,0) [0|6553.5] "V" VCU
+ SG_ PackCurrent m2 : 32|16@1- (0.1,0) [-3276.8|3276.7] "A" VCU
+ SG_ CellAmount m3 : 8|8@1+ (1,0) [0|255] "" VCU
+ SG_ CVLow m3 : 16|16@1+ (0.1,0) [0|6553.5] "mV" VCU
+ SG_ CVMean m3 : 32|16@1+ (0.1,0) [0|6553.5] "mV" VCU
+ SG_ CVHigh m3 : 48|16@1+ (0.1,0) [0|6553.5] "mV" VCU
+ SG_ ThermistorAmount m4 : 8|8@1+ (1,0) [0|255] "" VCU
+ SG_ TMin m4 : 16|8@1+ (1,0) [-128|127] "C" VCU
+ SG_ TMax m4 : 24|8@1+ (1,0) [-128|127] "C" VCU
+ SG_ iTH m4 : 32|16@1+ (1,0) [0|65535] "" VCU
+ SG_ SOC m5 : 8|8@1+ (1,0) [0|100] "%" VCU
+ SG_ PackKWHr m5 : 16|16@1+ (0.1,0) [0|6553.5] "kWh" VCU
+ SG_ PackMaxKWHr m5 : 32|16@1+ (0.1,0) [0|6553.5] "kWh" VCU
+ SG_ GroundFaultIsolation m15 : 16|16@1+ (1,0) [0|65535] "ohm/V" VCU
+
+BO_ 849 BMS_Limits_from_MCU: 8 MCU
+ SG_ TargetChargeVoltage : 16|16@1+ (0.1,0) [0|6553.5] "V" VCU
+ SG_ TargetChargeCurrent : 32|16@1+ (0.1,0) [0|6553.5] "A" VCU
+ SG_ DischargeCurrentLimit : 48|8@1+ (0.1,0) [0|25.5] "A" VCU
+ SG_ DischargeVoltageLimit : 56|8@1+ (0.1,0) [0|25.5] "V" VCU
+
+BO_ 853 BMS_SOC_from_MCU: 8 MCU
+ SG_ SOCPercent : 8|8@1+ (1,0) [0|100] "%" VCU
+ SG_ SOCTenths : 32|16@1+ (0.1,0) [0|6553.5] "%" VCU
+
+BO_ 854 BMS_Status_from_MCU: 8 MCU
+ SG_ BatteryVoltage : 16|16@1+ (0.1,0) [0|6553.5] "V" VCU
+ SG_ BatteryCurrent : 32|16@1+ (0.1,-3276.8) [0|3276.7] "A" VCU
+ SG_ BatteryTemperature : 48|16@1+ (0.1,-3276.8) [0|3276.7] "C" VCU
+
+BO_ 858 BMS_Errors_from_MCU: 8 MCU
+ SG_ ProtocolID : 8|8@1+ (1,0) [0|255] "" VCU
+ SG_ TargetVoltage : 16|16@1+ (0.1,0) [0|6553.5] "V" VCU
+ SG_ TargetCurrent : 32|8@1+ (1,0) [0|255] "A" VCU
+ SG_ FaultFlag : 40|8@1+ (1,0) [0|255] "" VCU
+ SG_ StatusFlag : 48|8@1+ (1,0) [0|255] "" VCU
+ SG_ SOCPercent : 56|8@1+ (1,0) [0|100] "%" VCU
+
+BO_ 859 BMS_Status2_from_MCU: 8 MCU
+ SG_ ProtocolID : 8|8@1+ (1,0) [0|255] "" VCU
+ SG_ TargetVoltage : 16|16@1+ (0.1,0) [0|6553.5] "V" VCU
+ SG_ TargetCurrent : 32|8@1+ (1,0) [0|255] "A" VCU
+ SG_ FaultFlag : 40|8@1+ (1,0) [0|255] "" VCU
+ SG_ StatusFlag : 48|8@1+ (1,0) [0|255] "" VCU
+ SG_ SOCPercent : 56|8@1+ (1,0) [0|100] "%" VCU
+
+BO_ 274 BatteryData_From_VCU: 8 VCU
+ SG_ Battery_Volts : 16|16@1+ (0.1,0) [0|500] "V" i3LIM
+ SG_ DC_link : 56|8@1+ (4,0) [0|1000] "V" i3LIM
+ SG_ Battery_Status : 48|4@1+ (1,0) [0|16] "" i3LIM
+ SG_ Battery_Current : 0|16@1+ (0.1,-819.2) [0|819] "A" i3LIM
+ SG_ HVBatt_SOC : 32|12@1+ (0.1,0) [0|100] "%" i3LIM
+
+BO_ 417 DCDCSetpoint_From_VCU: 5 VCU
+ SG_ SpeedData_0 : 0|8@1+ (1,0) [0|255] "" i3LIM
+
+BO_ 1296 NetworkMgmtZGW_From_VCU: 8 VCU
+ SG_ NetworkZGW : 0|8@1+ (1,0) [0|255] "" i3LIM
+
+BO_ 1306 i3LIMnetworkMgmt1_From_VCU: 8 VCU
+ SG_ NetworkMgmt1 : 0|8@1+ (1,0) [0|255] "" i3LIM
+
+BO_ 1074 BatterySOCDisplay_From_VCU: 5 VCU
+ SG_ Voltage_Setpoint : 4|12@1+ (0.1,0) [0|410] "V" i3LIM
+ SG_ Low_SOC : 16|8@1+ (0.5,0) [0|100] "%" i3LIM
+ SG_ High_SOC : 24|8@1+ (0.5,0) [0|100] "%" i3LIM
+ SG_ Display_SOC : 32|8@1+ (0.5,0) [0|100] "%" i3LIM
+
+BO_ 762 UnknownLimCommand_From_VCU: 8 VCU
+ SG_ Chg_End : 18|2@1+ (1,0) [0|1] "" i3LIM
+ SG_ FC_End : 16|2@1+ (1,0) [0|1] "" i3LIM
+ SG_ Target_CHG_Ph : 20|4@1+ (1,0) [0|1] "" i3LIM
+ SG_ Time2Go : 0|16@1+ (1,0) [0|65534] "min" i3LIM
+ SG_ Target_Volts : 24|14@1+ (0.1,0) [0|1000] "V" i3LIM
+
+BO_ 753 ChargeLimitsTimers_From_VCU: 8 VCU
+ SG_ V_Limit : 0|16@1+ (0.1,0) [0|6553.5] "V" i3LIM
+ SG_ I_Limit : 16|8@1+ (1,0) [0|255] "A" i3LIM
+ SG_ TimeToFullSOC : 24|16@1+ (10,0) [0|655350] "s" i3LIM
+ SG_ TimeToBulkSOC : 40|16@1+ (10,0) [0|655350] "s" i3LIM
+ SG_ SOC_Target : 56|8@1+ (0.5,0) [0|127.5] "%" i3LIM
+
+BO_ 303 WakeUpMessage_From_VCU: 8 VCU
+ SG_ WakeByte0 : 0|8@1+ (1,0) [0|255] "" i3LIM
+
+BO_ 1073 LIMHeartbeat_From_VCU: 8 VCU
+ SG_ Byte0 : 0|8@1+ (1,0) [0|255] "" i3LIM
+
+BO_ 1001 ChargeControlStatus_From_VCU: 8 VCU
+ SG_ BatteryWh : 0|16@1+ (1,0) [0|65535] "Wh" i3LIM
+ SG_ ChargeStatus : 16|4@1+ (1,0) [0|15] "" i3LIM
+ SG_ ChargeRequest : 20|4@1+ (1,0) [0|15] "" i3LIM
+ SG_ ChargePower : 24|16@1+ (1,0) [0|65535] "" i3LIM
+ SG_ CurrentRequest : 40|12@1+ (1,0) [0|4095] "" i3LIM
+ SG_ ContactorCtrl : 52|4@1+ (1,0) [0|15] "" i3LIM
+ SG_ EOC_Timer : 56|8@1+ (1,0) [0|255] "min" i3LIM
+
+BO_ 60 VehicleStatus_From_VCU: 8 VCU
+ SG_ Byte0 : 0|8@1+ (1,0) [0|255] "" i3LIM
+
+BO_ 1344 i3LIMnetworkMgmt_From_VCU: 8 VCU
+ SG_ Byte0 : 0|8@1+ (1,0) [0|255] "" i3LIM
+
+BO_ 1000 LIMOBDReset_From_VCU: 2 VCU
+ SG_ ResetCommand : 0|8@1+ (1,0) [0|255] "" i3LIM
+ SG_ ResetFlag : 8|8@1+ (1,0) [0|255] "" i3LIM
+
+BO_ 808 RTC_Counter_From_VCU: 6 VCU
+ SG_ Seconds_ctr : 0|32@1+ (1,0) [0|2704] "s" i3LIM
+ SG_ Day_ctr : 32|16@1+ (1,0) [0|65534] "Days" i3LIM
+
+BO_ 1017 MotorStatus_From_VCU: 8 VCU
+ SG_ MotorInfo_0 : 0|8@1+ (1,0) [0|255] "" i3LIM
+
+BO_ 672 CentralLockStatus_From_VCU: 8 VCU
+ SG_ CentralLock1 : 0|8@1+ (1,0) [0|255] "" i3LIM
+
+BO_ 764 FlapLockStatus_From_VCU: 8 VCU
+ SG_ LockControl : 0|8@1+ (1,0) [0|255] "" i3LIM
+
+BO_ 928 VehicleCondition_From_VCU: 8 VCU
+ SG_ VehicleState_0 : 0|8@1+ (1,0) [0|255] "" i3LIM
+
+BO_ 948 LimitService_From_i3LIM: 8 i3LIM
+ SG_ Pilot_Current : 0|8@1+ (1,0) [0|63] "A" VCU
+ SG_ Cable_Current : 8|8@1+ (1,0) [0|63] "A" VCU
+ SG_ FC_Voltage : 56|8@1+ (2,0) [0|500] "V" VCU
+ SG_ Pilot_Status : 32|3@1+ (1,0) [0|1] "" VCU
+ SG_ PP_Status : 16|1@1+ (1,0) [0|1] "" VCU
+ SG_ CP_Lock_Status : 26|2@1+ (1,0) [0|1] "" VCU
+ SG_ CHG_Flap_Status : 28|2@1+ (1,0) [0|4] "" VCU
+ SG_ Plug_Connection : 37|2@1+ (1,0) [0|4] "" VCU
+ SG_ Charge_End_Sig : 20|2@1+ (1,0) [0|4] "" VCU
+ SG_ HW_Charger_EN : 22|2@1+ (1,0) [0|1] "" VCU
+ SG_ CCS_Plug : 35|2@1+ (1,0) [0|1] "" VCU
+ SG_ Charging_Type : 48|8@1+ (1,0) [0|1] "" VCU
+ SG_ DC_Chg_Volts : 39|9@1+ (2,0) [0|1000] "V" VCU
+
+BO_ 626 ContactorFlapStatus_From_i3LIM: 8 i3LIM
+ SG_ FC_Contactor_Info : 20|4@1+ (1,0) [0|15] "" VCU
+ SG_ FC_Contactor_State : 18|2@1+ (1,0) [0|3] "" VCU
+ SG_ ChargeFlap_Status : 16|2@1+ (1,0) [0|4] "" VCU
+
+BO_ 670 Availability_From_i3LIM: 8 i3LIM
+ SG_ I_Available : 24|16@1+ (0.1,0) [-500|500] "A" VCU
+ SG_ V_Avail : 8|16@1+ (0.1,0) [0|1000] "V" VCU
+ SG_ Thresh_V : 40|16@1+ (0.1,0) [0|600] "V" VCU
+ SG_ Weld_Det_En : 0|2@1+ (1,0) [0|4] "" VCU
+ SG_ internal_charger_status : 2|4@1+ (1,0) [0|16] "" VCU
+ SG_ CCS_Protocol : 56|8@1+ (1,0) [0|255] "" VCU
+ SG_ Iso_Status : 6|2@1+ (1,0) [0|3] "" VCU
+
+BO_ 690 Measurement_From_i3LIM: 8 i3LIM
+ SG_ Battery_Compatability : 38|2@1+ (1,0) [0|4] "" VCU
+ SG_ CHG_Volts : 0|16@1+ (0.1,0) [0|1] "V" VCU
+ SG_ CHG_Amps : 16|16@1+ (0.1,0) [-500|500] "A" VCU
+ SG_ I_Limit : 44|2@1+ (1,0) [0|1] "" VCU
+ SG_ V_Limit : 46|2@1+ (1,0) [0|3] "" VCU
+ SG_ Batt_Malf : 40|2@1+ (1,0) [0|3] "" VCU
+ SG_ Charge_Status : 32|2@1+ (1,0) [0|3] "" VCU
+ SG_ CCS_Malf : 34|2@1+ (1,0) [0|3] "" VCU
+ SG_ DC_Chg_Stop : 42|2@1+ (1,0) [0|3] "" VCU
+
+BO_ 751 MinVoltageAvailability_From_i3LIM: 8 i3LIM
+ SG_ MinV_Avail : 0|16@1+ (0.1,0) [0|1000] "V" VCU
+ SG_ Min_I_Avail : 16|12@1+ (0.1,0) [0|410] "A" VCU
+ SG_ Energy_Transmitted : 56|8@1+ (0.25,0) [0|63] "kWh" VCU
+ SG_ Power_Limit : 52|2@1+ (1,0) [0|2] "" VCU
+
+BO_ 1374 GWS_Heartbeat_From_GearLever: 8 GearLever
+ SG_ Raw0 : 0|8@1+ (1,0) [0|255] "" VCU
+ SG_ Raw1 : 8|8@1+ (1,0) [0|255] "" VCU
+ SG_ Raw2 : 16|8@1+ (1,0) [0|255] "" VCU
+ SG_ Raw3 : 24|8@1+ (1,0) [0|255] "" VCU
+ SG_ Raw4 : 32|8@1+ (1,0) [0|255] "" VCU
+ SG_ Raw5 : 40|8@1+ (1,0) [0|255] "" VCU
+ SG_ Raw6 : 48|8@1+ (1,0) [0|255] "" VCU
+ SG_ Raw7 : 56|8@1+ (1,0) [0|255] "" VCU
+
+BO_ 1630 GWS_Diagnostics_From_GearLever: 8 GearLever
+ SG_ Raw0 : 0|8@1+ (1,0) [0|255] "" VCU
+ SG_ Raw1 : 8|8@1+ (1,0) [0|255] "" VCU
+ SG_ Raw2 : 16|8@1+ (1,0) [0|255] "" VCU
+ SG_ Raw3 : 24|8@1+ (1,0) [0|255] "" VCU
+ SG_ Raw4 : 32|8@1+ (1,0) [0|255] "" VCU
+ SG_ Raw5 : 40|8@1+ (1,0) [0|255] "" VCU
+ SG_ Raw6 : 48|8@1+ (1,0) [0|255] "" VCU
+ SG_ Raw7 : 56|8@1+ (1,0) [0|255] "" VCU
+
+BO_ 1021 LeverCommand_From_VCU: 5 VCU
+ SG_ CRC : 0|8@1+ (1,0) [0|255] "" GearLever
+ SG_ Cnt3FD : 8|8@1+ (1,0) [0|255] "" GearLever
+ SG_ Direction : 16|8@1+ (1,0) [0|3] "" GearLever
+ SG_ Reserved : 24|8@1+ (1,0) [0|255] "" GearLever
+ SG_ SportNum : 32|8@1+ (1,0) [0|255] "" GearLever
+
+BO_ 1022 EPB_Status: 7 EPB
+ SG_ ParkingBrake : 0|8@1+ (1,0) [0|4] "" VCU
+ SG_ EngageThreshold : 8|16@1+ (0.1,0) [0|6553.5] "A" VCU
+ SG_ DisengageThreshold : 24|16@1+ (0.1,0) [0|6553.5] "A" VCU
+ SG_ MeasuredCurrent : 40|16@1+ (0.1,0) [0|6553.5] "A" VCU
+
+BO_ 1023 EPB_Config: 4 VCU
+ SG_ EngageThreshold_Set : 0|16@1+ (0.1,0) [0|6553.5] "A" EPB
+ SG_ DisengageThreshold_Set : 16|16@1+ (0.1,0) [0|6553.5] "A" EPB
+
+BO_ 514 BacklightCommand_From_VCU: 2 VCU
+ SG_ BacklightLevel : 0|8@1+ (1,0) [0|255] "" GearLever
+ SG_ Reserved : 8|8@1+ (1,0) [0|255] "" GearLever
+
+BO_ 263 ID108DIR_torque_From_Motor: 8 Drive_Unit
+ SG_ DIR_axleSpeed : 40|16@1- (0.1,0) [-2750|2750] "RPM" VCU
+ SG_ DIR_slavePedalPos : 56|8@1+ (0.4,0) [0|100] "%" VCU
+ SG_ DIR_torqueActual : 27|13@1- (2,0) [-7500|7500] "Nm" VCU
+ SG_ DIR_torqueChecksum : 0|8@1+ (1,0) [0|255] "" VCU
+ SG_ DIR_torqueCommand : 12|13@1- (2,0) [-7500|7500] "Nm" VCU
+ SG_ DIR_torqueCounter : 8|4@1+ (1,0) [0|15] "" VCU
+ SG_ DIR_axleSpeedQF : 25|1@1+ (1,0) [0|1] "" VCU
+
+BO_ 264 ChargerConfig: 3 PCS_Controller
+ SG_ AC_Line_Voltage : 0|10@1+ (1,0) [0|1023] "V" VCU
+ SG_ Grid_Config : 10|2@1+ (1,0) [0|3] "" VCU
+ SG_ Charger_Fault : 12|1@1+ (1,0) [0|1] "" VCU
+ SG_ DCDC_Fault : 13|1@1+ (1,0) [0|1] "" VCU
+ SG_ PCS_Other_Alert : 14|1@1+ (1,0) [0|1] "" VCU
+ SG_ Charger_Max_Power : 16|8@1+ (0.1,0) [0|25.5] "kW" VCU
+
+BO_ 1686 PowerAndRegenLimits_From_VCU: 8 VCU
+ SG_ MaxDischargePower : 7|16@0+ (0.01,0) [0|655.35] "kW" T2C
+ SG_ MaxRegenPower : 23|16@0+ (0.01,0) [0|655.35] "kW" T2C
+
+BO_ 1687 ShiftCommand_From_VCU: 8 VCU
+ SG_ ShiftCommand : 0|8@1+ (1,0) [13|15] "" T2C
+ SG_ CheckCode : 8|16@1+ (1,0) [0|65535] "" T2C
+
+BO_ 1760 SUPERMAN_REQUEST: 8 VCU
+ SG_ CoolCabin : 0|8@1+ (1,0) [0|2] "" SUPERMAN
+ SG_ HeatCabinL : 8|8@1+ (1,0) [0|2] "" SUPERMAN
+ SG_ HeatCabinR : 16|8@1+ (1,0) [0|2] "" SUPERMAN
+ SG_ PreheatReq : 24|8@1+ (1,0) [0|2] "" SUPERMAN
+ SG_ TempBattery : 32|8@1+ (1,-40) [0|255] "C" SUPERMAN
+ SG_ TempPowertrain : 40|8@1+ (1,-40) [0|255] "C" SUPERMAN
+
+BO_ 1761 SUPERMAN_STATUS: 8 SUPERMAN
+ SG_ Opmode : 0|2@1+ (1,0) [0|2] "" VCU
+ SG_ CompressorState : 2|4@1+ (1,0) [0|15] "" VCU
+ SG_ HeatTransferMode : 6|2@1+ (1,0) [0|2] "" VCU
+ SG_ FaultCompressorTimeout : 8|1@1+ (1,0) [0|1] "" VCU
+ SG_ FaultCompressorFault : 9|1@1+ (1,0) [0|1] "" VCU
+ SG_ FaultRefrigerantHighP : 10|1@1+ (1,0) [0|1] "" VCU
+ SG_ FaultRefrigerantLowP : 11|1@1+ (1,0) [0|1] "" VCU
+ SG_ FaultPressureSensor : 12|1@1+ (1,0) [0|1] "" VCU
+ SG_ FaultTempSensor : 13|1@1+ (1,0) [0|1] "" VCU
+ SG_ FaultCoolantLow : 14|1@1+ (1,0) [0|1] "" VCU
+ SG_ FaultPumpBattery : 15|1@1+ (1,0) [0|1] "" VCU
+ SG_ FaultPumpPowertrain : 16|1@1+ (1,0) [0|1] "" VCU
+ SG_ FaultOctovalve : 17|1@1+ (1,0) [0|1] "" VCU
+ SG_ ThermalDemands : 24|8@1+ (1,0) [0|127] "" VCU
+ SG_ HvPower : 32|8@1+ (0.1,0) [0|25.5] "kW" VCU
+ SG_ AliveCounter : 40|8@1+ (1,0) [0|255] "" VCU
+
+
+CM_ BO_ 409 "Status output from the MITM pedal module (TX ~10 Hz). dat[0]=BMW pedal in %, dat[1]=output after max/cut/fault %, dat[2]=state.";
+CM_ BO_ 512 "Cruise-control gas request (OP -> pedal). 4 bytes, >=20 Hz, 100 ms timeout -> passthrough. Only ADDS throttle: out=max(bmw_pedal, can_gas). 0% = Tesla unpressed = one-pedal regen. Do not copy Toyota interceptor layout (Toyota 0x200 is 6 bytes).";
+CM_ BO_ 513 "Torque-cut / brake override from VCU (3 bytes, 200 ms timeout). Firmware bitfield, NOT magic 90. Panda must not TX 0x201 in v1.";
+CM_ BO_ 168 "VCU BMW_E90.cpp SendAbsDscMessages. Live brake on this car. Byte7 BrakeMagic: 0x64 pressed, 0x04 released. Period ~10 ms. e9x EngineAndBrake 0x168 is ICE DME and must not be used for OP brake.";
+CM_ BO_ 690 "Live layout is i3LIM Measurement (8 bytes). VCU i3LIM.cpp handle2B2. Conflicting Tesla PCS ChargePowerRequest (5 bytes: ChargerPower 0|16@1+ factor 0.001 kW, ChargerEnable byte2 0x02/0x00) is unused on this DBC; same ID cannot have two layouts.";
+CM_ BO_ 932 "Reconstructed. Source DBC truncated at 'BO_ 932 PCS_AlertMatrix_From_PCS: 8 PCSO_ 409'. PCS firmware 0x3A4: byte0 low nibble is page mux; bits 4..63 are live alert bits (page 0 = alerts 1..60, page 1 = 61..120). Original per-alert Tesla names were not recovered.";
+CM_ BO_ 1022 "Parking brake status. Byte0 == 2 engaged (plan 0x3FE).";
+
+CM_ SG_ 409 PedalInPct "Normalized BMW pedal input 0-100 %.";
+CM_ SG_ 409 PedalOutPct "Final command after cruise/cut/fault 0-100 %.";
+CM_ SG_ 409 PedalState "0 PASSTHROUGH, 1 THROTTLEGATING (cut/fault), 2 DRIVEBYWIRE.";
+CM_ SG_ 512 GasReq "Raw byte 0-255 = 0-100 %. Factor 100/255.";
+CM_ SG_ 512 GasEnable "Must be 0xA5 (165) to enable CAN gas. Anything else is ignored.";
+CM_ SG_ 512 GasCounter "Low nibble of byte 2, must increment every frame.";
+CM_ SG_ 512 GasChecksum "CRC8 poly 0xD5 init 0xFF over bytes 0..2, forward (not Toyota reverse).";
+CM_ SG_ 513 REGEN_CUT "Byte0 bit0 (0x01). Sender din_brake. Pedal firmware ignores this bit (forcing 0% would maximize regen).";
+CM_ SG_ 513 ALL_TORQUE_CUT "Byte0 bit1 (0x02). Sender neutralPending. Force interceptor output to 0 %.";
+CM_ SG_ 513 CutCounter "Low nibble of byte 1, must increment every frame.";
+CM_ SG_ 513 CutChecksum "CRC8 poly 0xD5 init 0xFF over bytes 0..1, forward.";
+CM_ SG_ 168 BrakeMagic "Byte 7. 0x64 (100) = brake pressed, 0x04 (4) = released. OP brake_pressed iff == 0x64.";
+CM_ SG_ 168 Checksum_A8 "BMW sum-fold of bytes 1-7 plus 0xA8.";
+CM_ SG_ 168 Counter_A8 "Incrementing counter byte (VCU A81).";
+CM_ SG_ 263 DIR_axleSpeed "Rear axle speed, RPM.";
+CM_ SG_ 263 DIR_torqueActual "Rear axle torque, Nm.";
+CM_ SG_ 263 DIR_torqueCommand "Rear axle torque request, Nm.";
+CM_ SG_ 1761 Opmode "0=Off, 1=Run, 2=Preheat";
+CM_ SG_ 1761 CompressorState "0=None, 1=Normal, 2=Wait, 3=Fault, 4=SoftStart, 5=SoftShutdown, 15=SNA";
+CM_ SG_ 1761 HeatTransferMode "0=Passive, 1=DominantHeating, 2=DominantCooling";
+CM_ SG_ 1761 ThermalDemands "Bitmask: 1=CoolCabin, 2=CoolBattery, 4=CoolPowertrain, 8=HeatCabinL, 16=HeatCabinR, 32=HeatBattery, 64=RadiatorDefrost";
+CM_ SG_ 1761 HvPower "Compressor electrical power draw estimate, 0.1 kW/count";
+
+VAL_ 409 PedalState 0 "PASSTHROUGH" 1 "THROTTLEGATING" 2 "DRIVEBYWIRE" ;
+VAL_ 512 GasEnable 165 "ENABLE" ;
+VAL_ 513 REGEN_CUT 0 "INACTIVE" 1 "REGEN_CUT_IGNORED" ;
+VAL_ 513 ALL_TORQUE_CUT 0 "INACTIVE" 1 "FORCE_ZERO_PERCENT" ;
+VAL_ 168 BrakeMagic 4 "RELEASED" 100 "PRESSED" ;
+VAL_ 554 ControlByte 0 "None" 5 "Charger" 9 "DCDC" 13 "Both" ;
+VAL_ 265 EnableControl 10 "Enabled" 12 "Disabled" ;
+VAL_ 265 OperationMode 0 "Off" 1 "Run" 2 "Precharge" 3 "PchFail" 4 "Charge" ;
+VAL_ 920 MainContactorPosState 0 "OPEN" 1 "STARTUP" 2 "ECONOMIZED" ;
+VAL_ 920 MainContactorNegState 0 "OPEN" 1 "STARTUP" 2 "ECONOMIZED" ;
+VAL_ 920 CCScontactorPosState 0 "OPEN" 1 "STARTUP" 2 "ECONOMIZED" ;
+VAL_ 920 CCScontactorNegState 0 "OPEN" 1 "STARTUP" 2 "ECONOMIZED" ;
+VAL_ 919 PrechargeRelay 3 "Request_RELAY_OFF" 2 "Request_RELAY_ON" ;
+VAL_ 919 NegativeRelay 3 "Request_RELAY_OFF" 2 "Request_RELAY_ON" ;
+VAL_ 919 PositiveRelay 3 "Request_RELAY_OFF" 2 "Request_RELAY_ON" ;
+VAL_ 659 mux293 1 "MCU_Summary" 2 "Pack_Summary" 3 "Cell_Voltage_Summary" 4 "Thermistor_Summary" 5 "SOC_Summary" 15 "GFM_Status" ;
+VAL_ 264 Grid_Config 0 "None" 1 "1_Phase" 2 "3_Phase" 3 "3_Phase_Delta" ;
+VAL_ 264 Charger_Fault 0 "OK" 1 "Fault" ;
+VAL_ 264 DCDC_Fault 0 "OK" 1 "Fault" ;
+VAL_ 264 PCS_Other_Alert 0 "None" 1 "Active" ;
+VAL_ 948 FC_Voltage 251 "AC_Charge" 254 "Error" 252 "Not_Available" ;
+VAL_ 948 Pilot_Status 0 "No_Pilot" 1 "AC_Not_Ready" 2 "AC_Ready" 3 "Error" 4 "5%_Not_Ready" 5 "5%_Ready" 6 "Pilot_Static" ;
+VAL_ 948 PP_Status 0 "Unplugged" 1 "Plug_Inserted" ;
+VAL_ 948 CP_Lock_Status 0 "Not_Locked" 1 "Locked" 2 "Error" 3 "Invalid_signal" ;
+VAL_ 948 CHG_Flap_Status 0 "not_locked" 1 "locked" 3 "invalid" ;
+VAL_ 948 Plug_Connection 0 "None" 1 "Plugged" 2 "Error" 3 "Invalid_Signal" ;
+VAL_ 948 Charge_End_Sig 0 "No_Request" 1 "End_Chg_Driver" 2 "End_Chg_CSM" 3 "Invalid" ;
+VAL_ 948 HW_Charger_EN 0 "Inactive" 1 "Active" 2 "Error" 3 "Invalid" ;
+VAL_ 948 CCS_Plug 0 "Not_Inserted" 1 "Inserted" 2 "Error" 3 "Invalid_Signal" ;
+VAL_ 948 Charging_Type 0 "Noen" 1 "AC_Type_1" 2 "AC_Type_2" 3 "DC_Chademo" 4 "DC_CCS_Type_1C" 5 "AC_China" 6 "AC_CCS_Type_1" 7 "AC_CCS_Type_2" 8 "DC_CCS_Type_1" 9 "DC_CCS_Type_2C" ;
+VAL_ 948 DC_Chg_Volts 507 "AC_or_Neg" 508 "Inactive" 509 "Not_avail" 510 "Error" 511 "Invalid" ;
+VAL_ 670 Weld_Det_En 0 "Charger_does_not_support_the_EV" 1 "Charger_supports_the_EV_relay_weld" 3 "Signal_unavail" ;
+VAL_ 670 internal_charger_status 0 "Not_ready" 1 "Ready" 2 "Switch_off_charger" 3 "Interruption" 4 "Pre_charge" 5 "insulation_monitor" 6 "estop" 7 "Malfunction" 19 "reserved" 20 "reserved" 21 "signal_invalid" ;
+VAL_ 670 Iso_Status 0 "invalid" 1 "valid" 2 "error" 3 "invalid_signal" ;
+VAL_ 690 Battery_Compatability 0 "Compatible" 1 "Incompatible" 3 "Signal_error" ;
+VAL_ 690 I_Limit 0 "No" 1 "Yes" 3 "Invalid" ;
+VAL_ 690 V_Limit 0 "No" 1 "Yes" 3 "Invalid" ;
+VAL_ 690 Batt_Malf 0 "No" 1 "Yes" 3 "Invalid" ;
+VAL_ 690 Charge_Status 0 "Standby" 1 "Charging" 3 "Invalid" ;
+VAL_ 690 CCS_Malf 0 "Normal" 1 "Fail" 3 "Invalid" ;
+VAL_ 690 DC_Chg_Stop 0 "Tracking" 1 "Supression" 3 "Invalid" ;
+VAL_ 751 Power_Limit 0 "No" 1 "Yes" 3 "Invalid" ;
+VAL_ 1021 Direction 0 "Off" 32 "Park" 64 "Reverse" 96 "Neutral" 128 "Drive" 129 "Sport" ;
+VAL_ 1022 ParkingBrake 0 "Disengaged" 1 "Engaging" 2 "Engaged" 3 "Disengaging" 4 "Engage_failed" ;
+VAL_ 514 BacklightLevel 0 "Off" 255 "On" ;
+VAL_ 1687 ShiftCommand 13 "DRIVE_SHIFT_COMMAND" 14 "NEUTRAL_SHIFT_COMMAND" 15 "REVERSE_SHIFT_COMMAND" ;
+VAL_ 1760 CoolCabin 0 "Off" 1 "On" 2 "NA" ;
+VAL_ 1760 HeatCabinL 0 "Off" 1 "On" 2 "NA" ;
+VAL_ 1760 HeatCabinR 0 "Off" 1 "On" 2 "NA" ;
+VAL_ 1760 PreheatReq 0 "Off" 1 "On" 2 "NA" ;
+VAL_ 1761 Opmode 0 "Off" 1 "Run" 2 "Preheat" ;
+VAL_ 1761 CompressorState 0 "None" 1 "Normal" 2 "Wait" 3 "Fault" 4 "SoftStart" 5 "SoftShutdown" 15 "SNA" ;
+VAL_ 1761 HeatTransferMode 0 "Passive" 1 "DominantHeating" 2 "DominantCooling" ;
