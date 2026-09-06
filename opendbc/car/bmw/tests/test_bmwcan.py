@@ -10,12 +10,15 @@ def test_wim_pedal_crc_worked_example():
   assert dat == bytes([0x33, 0xA5, 0x01, 0xD5])
 
 
-def test_accel_to_gas_coast_and_clip():
-  # 0 m/s² → 8 % → 20/255
-  assert CarControllerParams.accel_to_gas_raw(0.0) == 20
-  # 0 % pedal for regen at or below measured foot-off
-  assert CarControllerParams.accel_to_gas_raw(-0.4) == 0
-  assert CarControllerParams.accel_to_gas_raw(-1.5) == 0
-  # +1.5 m/s² → 30 %
-  assert CarControllerParams.accel_to_gas_raw(1.5) == 76
-  assert CarControllerParams.accel_to_gas_raw(3.0) == 76  # clip
+def test_accel_to_gas_monotonic_full_authority():
+  # Weak FF only: 0 m/s² → coast guess 10 %; I-term trims in LongControl.
+  assert CarControllerParams.accel_to_gas_raw(0.0) == 26  # 10% * 255
+  assert CarControllerParams.accel_to_gas_raw(-1.5) == 0   # max regen request
+  assert CarControllerParams.accel_to_gas_raw(1.5) == 255  # full pedal
+  assert CarControllerParams.accel_to_gas_raw(3.0) == 255
+  # Strictly increasing through the clip range
+  prev = -1
+  for a in (-1.5, -0.75, 0.0, 0.75, 1.5):
+    raw = CarControllerParams.accel_to_gas_raw(a)
+    assert raw >= prev
+    prev = raw

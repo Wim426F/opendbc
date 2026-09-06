@@ -34,6 +34,11 @@ class CarInterface(CarInterfaceBase):
     ret.openpilotLongitudinalControl = bool(ret.flags & E90Flags.PEDAL_INTERCEPTOR)
     ret.stopAccel = 0.0  # no friction brake; do not request a stop
 
+    # LongControl: kp is 0 in stock. I-term on (aTarget - aEgo) is what tracks
+    # when regen/SOC/power limits move the plant. Honda interceptor does the same.
+    ret.longitudinalTuning.kiBP = [0., 5., 35.]
+    ret.longitudinalTuning.kiV = [0.8, 0.5, 0.35]
+
     return ret
 
   @staticmethod

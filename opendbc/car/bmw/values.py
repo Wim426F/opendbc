@@ -57,19 +57,20 @@ class CarControllerParams:
   BRAKE_PRESSED_MAGIC = 0x64  # VCU 0x0A8 byte7
   BRAKE_RELEASED_MAGIC = 0x04
 
-  # Planner clip. Neighborhood log never needed more than +1.5 to follow 30 % pedal.
+  # Planner / LongControl clip (m/s²). Not a plant model.
+  # 0 % interceptor = Tesla unpressed = whatever regen the DU will give *right now*
+  # (SOC, temp, speed, your regen setting). OP cannot regen harder than that.
   ACCEL_MAX = 1.5
   ACCEL_MIN = -1.5
 
-  # Feedforward: actuators.accel (m/s²) → BMW pedal % (interceptor GasReq).
-  # From smalldrivearoundtheblock.csv, D, brake released, PedalIn vs dv/dt on 0xCE.
-  # 0 % is Tesla unpressed (regen). This drive's foot-off regen was only ~−0.4 m/s²
-  # (15–55 km/h, not highway pack-limited). Highway may be stronger; 0 % still
-  # means "max regen available". Do not extrapolate above 35 % (not in the log).
-  # Zero accel ≈ 8 % pedal. +1.5 m/s² ≈ 30 % pedal.
-  ACCEL_TO_PEDAL_BP = [-1.50, -0.40, 0.00, 0.21, 0.43, 0.82, 1.24, 1.50]
-  PEDAL_PCT_V =       [  0.0,   0.0,  8.0, 12.5, 17.5, 22.5, 27.5, 30.0]
-  GAS_COAST_PCT = 8.0
+  # Monotonic actuator scale only. Do NOT invert a measured pedal→accel curve:
+  # gain changes with v, pack limits, SOC. LongControl I-term (aTarget - aEgo)
+  # finds the pedal that matches; this map only has to be monotonic 0–100 %.
+  # 0 % at ACCEL_MIN = "request max regen available". 100 % at ACCEL_MAX.
+  # GAS_COAST_PCT is a weak feedforward guess for a=0 (I-term trims it).
+  ACCEL_TO_PEDAL_BP = [-1.50, 0.00, 1.50]
+  PEDAL_PCT_V =       [  0.0, 10.0, 100.0]
+  GAS_COAST_PCT = 10.0
   LONG_TX_STEP = 2  # 50 Hz from 100 Hz loop
 
   def __init__(self, CP):
