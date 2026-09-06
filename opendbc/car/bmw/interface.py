@@ -2,7 +2,7 @@ from opendbc.car import get_safety_config, structs
 from opendbc.car.bmw.carcontroller import CarController
 from opendbc.car.bmw.carstate import CarState
 from opendbc.car.bmw.radar_interface import RadarInterface
-from opendbc.car.bmw.values import E90Flags
+from opendbc.car.bmw.values import CarControllerParams, E90Flags
 from opendbc.car.interfaces import CarInterfaceBase
 
 TransmissionType = structs.CarParams.TransmissionType
@@ -29,7 +29,13 @@ class CarInterface(CarInterfaceBase):
     ret.pcmCruise = False  # stock DCC is dead; OP + MADS own enable
     ret.autoResumeSng = False
     ret.alphaLongitudinalAvailable = False
-    # alpha_long must not enable the interceptor. Flag stays off in v1.
+    # alpha_long must not enable the interceptor. Set E90Flags.PEDAL_INTERCEPTOR after
+    # 0x199 is on panda CAN0 and lat is proven. Until then, no 0x200 TX.
     ret.openpilotLongitudinalControl = bool(ret.flags & E90Flags.PEDAL_INTERCEPTOR)
+    ret.stopAccel = 0.0  # no friction brake; do not request a stop
 
     return ret
+
+  @staticmethod
+  def get_pid_accel_limits(CP, CP_SP, current_speed, cruise_speed):
+    return CarControllerParams.ACCEL_MIN, CarControllerParams.ACCEL_MAX

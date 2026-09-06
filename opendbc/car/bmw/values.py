@@ -1,6 +1,8 @@
 from dataclasses import dataclass, field
 from enum import IntEnum, IntFlag
 
+import numpy as np
+
 from opendbc.car import Bus, CarSpecs, DbcDict, PlatformConfig, Platforms
 from opendbc.car.common.conversions import Conversions as CV
 from opendbc.car.docs_definitions import CarDocs, CarHarness, CarParts, SupportType
@@ -8,13 +10,19 @@ from opendbc.car.structs import CarState
 
 GearShifter = CarState.GearShifter
 
-# v1 long enable floor (interceptor later). 30 km/h; drop below 25 km/h is a long-agent policy.
-MIN_ENABLE_SPEED = 8.3  # m/s
+# v1 long enable floor. 30 km/h; drop below 25 km/h is carcontroller hysteresis.
+MIN_ENABLE_SPEED = 8.3  # m/s  (30 km/h)
+LONG_DROP_SPEED = 25. * CV.KPH_TO_MS
 MIN_STEER_SPEED = 10. * CV.KPH_TO_MS
 
 
 class CanBus:
-  """Single panda CAN0 = can2_powertrain. Servo + pedal + VCU + forwarded BMW PT."""
+  """Single panda CAN0 = SavvyCAN bus 0 = gateway CAN2 / VCU vehicle / BMW PT after GW.
+
+  Do not splice Tesla/PCS (SavvyCAN bus 1): ID collisions 0x1D6/0x2B2/0x398.
+  Pedal 0x199/0x200 and servo 0x22E/0x22F are moved onto this bus (human).
+  Three DBC parsers share this one hardware bus (e9x + powertrain + ocelot).
+  """
   pt = 0
 
 
@@ -49,8 +57,30 @@ class CarControllerParams:
   BRAKE_PRESSED_MAGIC = 0x64  # VCU 0x0A8 byte7
   BRAKE_RELEASED_MAGIC = 0x04
 
+  # Planner clip. Neighborhood log never needed more than +1.5 to follow 30 % pedal.
+  ACCEL_MAX = 1.5
+  ACCEL_MIN = -1.5
+
+  # Feedforward: actuators.accel (m/s²) → BMW pedal % (interceptor GasReq).
+  # From smalldrivearoundtheblock.csv, D, brake released, PedalIn vs dv/dt on 0xCE.
+  # 0 % is Tesla unpressed (regen). This drive's foot-off regen was only ~−0.4 m/s²
+  # (15–55 km/h, not highway pack-limited). Highway may be stronger; 0 % still
+  # means "max regen available". Do not extrapolate above 35 % (not in the log).
+  # Zero accel ≈ 8 % pedal. +1.5 m/s² ≈ 30 % pedal.
+  ACCEL_TO_PEDAL_BP = [-1.50, -0.40, 0.00, 0.21, 0.43, 0.82, 1.24, 1.50]
+  PEDAL_PCT_V =       [  0.0,   0.0,  8.0, 12.5, 17.5, 22.5, 27.5, 30.0]
+  GAS_COAST_PCT = 8.0
+  LONG_TX_STEP = 2  # 50 Hz from 100 Hz loop
+
   def __init__(self, CP):
     pass
+
+  @classmethod
+  def accel_to_gas_raw(cls, accel: float) -> int:
+    """Clip accel and map to interceptor byte0 (0–255)."""
+    a = float(np.clip(accel, cls.ACCEL_MIN, cls.ACCEL_MAX))
+    pct = float(np.interp(a, cls.ACCEL_TO_PEDAL_BP, cls.PEDAL_PCT_V))
+    return int(round(max(0.0, min(100.0, pct)) * 255.0 / 100.0))
 
 
 @dataclass
@@ -76,7 +106,7 @@ class CAR(Platforms):
     CarSpecs(
       mass=1570.,
       wheelbase=2.76,
-      steerRatio=16.0,  # hydraulic EPS-era; re-measure with column stepper + gearbox
+      steerRatio=16.0,  # start 16. Log yaw-from-axle vs SAS ~10 (n=7); re-measure with servo
       centerToFrontRatio=0.44,  # RWD
       minSteerSpeed=MIN_STEER_SPEED,
       minEnableSpeed=MIN_ENABLE_SPEED,
