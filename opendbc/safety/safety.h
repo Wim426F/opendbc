@@ -21,6 +21,7 @@
 #include "opendbc/safety/modes/subaru.h"
 #include "opendbc/safety/modes/subaru_preglobal.h"
 #include "opendbc/safety/modes/mazda.h"
+#include "opendbc/safety/modes/bmw.h"
 #include "opendbc/safety/modes/nissan.h"
 #include "opendbc/safety/modes/volkswagen_mlb.h"
 #include "opendbc/safety/modes/volkswagen_mqb.h"
@@ -415,6 +416,7 @@ int set_safety_hooks(uint16_t mode, uint16_t param) {
     {SAFETY_NOOUTPUT, &nooutput_hooks},
     {SAFETY_HYUNDAI_LEGACY, &hyundai_legacy_hooks},
     {SAFETY_MAZDA, &mazda_hooks},
+    {SAFETY_BMW, &bmw_hooks},
     {SAFETY_BODY, &body_hooks},
     {SAFETY_FORD, &ford_hooks},
     {SAFETY_RIVIAN, &rivian_hooks},
