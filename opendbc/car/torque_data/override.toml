@@ -109,6 +109,9 @@ legend = ["LAT_ACCEL_FACTOR", "MAX_LAT_ACCEL_MEASURED", "FRICTION"]
 # Dashcam or fallback configured as ideal car
 "MOCK" = [10.0, 10, 0.0]
 
+# BMW E90 EV column stepper (STEER_MAX 6 Nm v1). Conservative until logs.
+"BMW_E90_EV" = [1.5, 1.5, 0.15]
+
 # Manually checked
 "HONDA_CIVIC_2022" = [2.5, 1.2, 0.15]
 "HONDA_HRV_3G" = [2.5, 1.2, 0.2]
