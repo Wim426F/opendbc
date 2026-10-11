@@ -75,9 +75,9 @@ class CarControllerParams:
   GAS_COAST_PCT = 10.0
   LONG_TX_STEP = 2  # 50 Hz from 100 Hz loop (DT_CTRL = 10 ms)
 
-  # Actuator rate limits (% Tesla pedal / s). Single limiter; not a jerk model.
-  # Down = toward home = more regen. 25 %/s => 100 %→0 % in 4 s while tracking.
-  # Disable does not use these: 0x200 stops immediately.
+  # Ride quality for this E90 EV (% Tesla pedal / s). Not ISO jerk, not panda.
+  # a_cmd may step; only GasReq % is limited. Down = toward home = more regen.
+  # Asymmetric: slower into regen than out. Disable does not slew (stop 0x200).
   PEDAL_MAX_DOWN_PCT_S = 25.0
   PEDAL_MAX_UP_PCT_S = 50.0
 
